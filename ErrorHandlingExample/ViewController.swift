@@ -19,7 +19,25 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    func fetchData() throws -> AnyObject  {
+        let data = NSData(contentsOfFile: "File.txt")
+        guard let unwrappedData = data else { throw Readfailure() }
+        let json = try NSJSONSerialization.JSONObjectWithData(unwrappedData, options: .AllowFragments)
+        return json
+    }
+    
+    func throwingFunction() throws -> AnyObject {
+        throw Readfailure()
+    }
+    
+    func nonThrowingFunction() throws -> AnyObject {
+        return ""
+    }
 
 
 }
 
+class Readfailure: ErrorType {
+}
+  
