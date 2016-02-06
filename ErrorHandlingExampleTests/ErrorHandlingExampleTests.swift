@@ -18,24 +18,39 @@ func XCTAssertDoesntThrow(methodCall: () throws -> ()) {
 }
 
 
-func XCTAssertThrows(methodCall: () throws -> ()		) {
+func XCTAssertThrows(methodCall: () throws -> (), testCondition: ((didThrow: Bool) -> Void)? = nil) {
+    
     var didThrow = false
     do {
         try methodCall()
     } catch  {
         didThrow = true
     }
+    if let testCondition = testCondition  {
+        testCondition(didThrow: didThrow)
+    } else {
+        XCTAssertTrue(didThrow)
+    }
     
-    XCTAssertTrue(didThrow)
 }
 
 
 class ErrorHandlingExampleTests: XCTestCase {
     
     func testIFXCTAssertThrowsPassesForThrowingFunction() {
-        XCTAssertThrows {
+        XCTAssertThrows({
             let vc = ViewController()
             try vc.throwingFunction()
+        })
+    }
+    
+    
+    func testIFXCTAssertThrowsRaisesErrorWhenGivenANonThrowingFunction() {
+        XCTAssertThrows({
+            let vc = ViewController()
+            try vc.nonThrowingFunction()
+            }) { (didThrow) in 
+                XCTAssertFalse(didThrow)
         }
     }
 
